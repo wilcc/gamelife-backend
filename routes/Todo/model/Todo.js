@@ -1,7 +1,8 @@
 const mongoose = require('mongoose')
 
 const TodoSchema = new mongoose.Schema ({
-    input:{type:String}
+    input:{type:String},
+    completed:{type:Boolean, default:false}
 })
 
 
