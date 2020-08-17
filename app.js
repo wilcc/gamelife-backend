@@ -4,6 +4,9 @@ const path = require('path');
 const cookieParser = require('cookie-parser');
 const logger = require('morgan');
 const cors = require('cors');
+const cron = require('node-cron')
+const Daily = require('./routes/Daily/model/Daily');
+
 
 const mongoose = require('mongoose');
 require('dotenv').config();
@@ -11,6 +14,7 @@ require('dotenv').config();
 const indexRouter = require('./routes/index');
 const usersRouter = require('./routes/users');
 const todoRouter = require('./routes/Todo/todoRoutes')
+const dailyRouter = require('./routes/Daily/dailyRoutes')
 
 
 const app = express();
@@ -26,6 +30,16 @@ mongoose
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'jade');
 
+
+cron.schedule("* * * * *", () => {
+  Daily.find().then((found)=>{
+    found.map((each)=>{
+      each.completed = false
+      each.save()
+    })
+  })
+  console.log('refreshed')
+})
 app.use(cors());
 app.use(logger('dev'));
 app.use(express.json());
@@ -36,6 +50,7 @@ app.use(express.static(path.join(__dirname, 'public')));
 app.use('/', indexRouter);
 app.use('/users', usersRouter);
 app.use('/todo',todoRouter)
+app.use('/daily',dailyRouter)
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {

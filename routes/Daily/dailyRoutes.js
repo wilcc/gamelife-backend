@@ -17,7 +17,15 @@ router.post('/create',(req,res)=>{
         return res.json(daily)
     })
 })
-
+router.put('/complete/:id',(req,res)=>{
+  Daily.findById({_id: req.params.id}).then((found)=>{
+    found.completed = true
+    found.save().then((saved)=>{
+      console.log(saved)
+      return res.json(saved)
+    })
+  })
+})
 router.delete('/remove/:id',(req, res) => {
     Daily.findByIdAndDelete({ _id: req.params.id }).then(
       res.json({ message: 'deleted' })
